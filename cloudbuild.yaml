@@ -64,12 +64,12 @@ steps:
           --platform=managed \
           --region=${_REGION} \
           --format='value(status.url)')
-        echo "Service deployed at: ${SERVICE_URL}"
-        echo "${SERVICE_URL}" > /workspace/service_url.txt
+        echo "Service deployed at: $${SERVICE_URL}"
+        echo "$${SERVICE_URL}" > /workspace/service_url.txt
         echo ""
         echo "Access the services at:"
-        echo "- Dispatch Server: ${SERVICE_URL}"
-        echo "- AI Assistant: ${SERVICE_URL}/ai/"
+        echo "- Dispatch Server: $${SERVICE_URL}"
+        echo "- AI Assistant: $${SERVICE_URL}/ai/"
     id: 'get-service-url'
     waitFor: ['deploy-to-cloud-run']
 
