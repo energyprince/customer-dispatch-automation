@@ -1,0 +1,109 @@
+# Git files
+.git
+.gitignore
+
+# Environment files (will be mounted as volumes)
+.env
+.env.local
+.env.*.local
+
+# Python cache
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test files
+*.test.py
+test_*.py
+tests/
+pytest_cache/
+.coverage
+htmlcov/
+
+# Documentation
+*.md
+docs/
+README*
+LICENSE*
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+temp/
+tmp/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Node modules (if any are added later)
+node_modules/
+
+# Docker files themselves
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Data directories (will be mounted as volumes)
+data/
+output/
+exports/
+
+# Backup files
+*.bak
+*.backup
+*_backup.py
+
+# OS specific files
+Thumbs.db
+Desktop.ini
+
+# Python virtual environments
+bin/
+include/
+lib/
+lib64/
+share/
+pyvenv.cfg
+
+# Jupyter notebooks
+*.ipynb
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editor backups
+*~
+*.swp
+*.swo
+*.bak
+
+# Development specific
+.env.development
+.env.test

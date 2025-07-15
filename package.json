@@ -1,0 +1,62 @@
+{
+  "name": "cpower-dispatch-server",
+  "version": "1.0.0",
+  "description": "Automated CPower curtailment notification system with screenshot capture",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "test:1": "jest src/tests/phase1",
+    "test:2": "jest src/tests/phase2",
+    "test:3": "jest src/tests/phase3",
+    "test:4": "jest src/tests/phase4",
+    "test:excel": "jest src/tests/phase1/excel.test.ts",
+    "test:parser": "jest src/tests/phase1/parser.test.ts",
+    "test:tracker": "jest src/tests/phase1/tracker.test.ts",
+    "test:email": "jest src/tests/phase2/email.test.ts",
+    "test:screenshot": "jest src/tests/phase2/screenshot.test.ts",
+    "test:monitor": "jest src/tests/phase3/monitor.test.ts",
+    "test:scheduler": "jest src/tests/phase3/scheduler.test.ts",
+    "test:workflow": "jest src/tests/phase4/workflow.test.ts"
+  },
+  "keywords": [
+    "cpower",
+    "energy",
+    "curtailment",
+    "automation",
+    "email",
+    "screenshot"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.6.1",
+    "exceljs": "^4.4.0",
+    "express": "^5.1.0",
+    "imap-simple": "^5.1.0",
+    "mailparser": "^3.6.5",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.7",
+    "playwright": "^1.40.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/imap-simple": "^4.2.10",
+    "@types/jest": "^29.5.11",
+    "@types/mailparser": "^3.4.6",
+    "@types/node": "^20.10.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.14",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.0"
+  }
+}

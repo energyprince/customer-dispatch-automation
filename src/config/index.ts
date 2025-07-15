@@ -1,0 +1,1 @@
+// Configuration management for CPower dispatch system

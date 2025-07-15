@@ -1,0 +1,89 @@
+# Google Cloud Build configuration for CPower Dispatch Event Automation
+# This file automates the build and deployment process to Cloud Run
+
+substitutions:
+  _SERVICE_NAME: cpower-dispatch-automation
+  _REGION: us-central1
+  _MAX_INSTANCES: '10'
+  _MIN_INSTANCES: '1'
+  _MEMORY: 4Gi
+  _CPU: '2'
+
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/${_SERVICE_NAME}'
+      - '-f'
+      - 'docker/Dockerfile'
+      - '.'
+    id: 'build-image'
+
+  # Step 2: Push the image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/${_SERVICE_NAME}'
+    id: 'push-image'
+    waitFor: ['build-image']
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_SERVICE_NAME}'
+      - '--image=gcr.io/$PROJECT_ID/${_SERVICE_NAME}'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--port=8080'
+      - '--memory=${_MEMORY}'
+      - '--cpu=${_CPU}'
+      - '--min-instances=${_MIN_INSTANCES}'
+      - '--max-instances=${_MAX_INSTANCES}'
+      - '--set-env-vars=NODE_ENV=production,TZ=America/New_York'
+      - '--set-secrets=ANTHROPIC_API_KEY=anthropic-api-key:latest,SMTP_HOST=smtp-host:latest,SMTP_PORT=smtp-port:latest,SMTP_USER=smtp-user:latest,SMTP_PASSWORD=smtp-password:latest,EMAIL_USER=email-user:latest,EMAIL_PASSWORD=email-password:latest,EMAIL_HOST=email-host:latest,PORTAL_URL=portal-url:latest,PORTAL_USERNAME=portal-username:latest,PORTAL_PASSWORD=portal-password:latest'
+      - '--timeout=900'
+      - '--concurrency=80'
+      - '--execution-environment=gen2'
+      - '--service-account=cpower-dispatch@dispatchautomationai.iam.gserviceaccount.com'
+    id: 'deploy-to-cloud-run'
+    waitFor: ['push-image']
+
+  # Step 4: Get the service URL
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        SERVICE_URL=$(gcloud run services describe ${_SERVICE_NAME} \
+          --platform=managed \
+          --region=${_REGION} \
+          --format='value(status.url)')
+        echo "Service deployed at: ${SERVICE_URL}"
+        echo "${SERVICE_URL}" > /workspace/service_url.txt
+        echo ""
+        echo "Access the services at:"
+        echo "- Dispatch Server: ${SERVICE_URL}"
+        echo "- AI Assistant: ${SERVICE_URL}/ai/"
+    id: 'get-service-url'
+    waitFor: ['deploy-to-cloud-run']
+
+# Configure the build timeout
+timeout: 1800s
+
+# Build logs will be stored in Google Cloud Storage
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+
+# Artifacts to save
+artifacts:
+  objects:
+    location: 'gs://$PROJECT_ID-build-artifacts'
+    paths:
+      - '/workspace/service_url.txt'

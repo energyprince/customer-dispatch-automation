@@ -1,0 +1,73 @@
+# CPower Quote Tool - Program Mappings by Region
+
+This document provides a comprehensive mapping of all demand response programs by region to prevent confusion between similarly named programs.
+
+## ISO-NE (New England)
+- **ADCR** (Active Demand Capacity Resource) - Capacity program with summer/winter commitments
+- **Connected Solutions** - Daily and targeted dispatch programs
+- **CapTag** - Capacity tag management (requires ADCR or Connected Solutions)
+- **OPHR** (On-Peak Hours Reduction) - Peak hour reduction program with different types
+- **Clean Peak** - Clean peak standard program (MA only)
+
+## NYISO (New York)
+- **ICAP-SCR** (Installed Capacity - Special Case Resource) - Capacity program
+- **CSRP** (Commercial System Relief Program) - Summer reliability program
+- **DLRP** (Distribution Load Relief Program) - Local distribution relief
+- **NY CapTag** - New York capacity tag management
+- **Energy Payments** - Additional energy payments (requires SCR/CSRP/DLRP)
+- **DER PM** programs (planned) - Distributed Energy Resource Performance Measurement
+
+## PJM (Mid-Atlantic)
+- **Emergency Capacity (EC)** - PJM's emergency capacity program
+  - Fields: ecSummerKW, ecWinterKW, ecNotificationTime, ecExcessRate
+  - Module: public/regions/pjm/emergency-capacity-module.js
+  - NOT to be confused with MDU/MISO's DRR program
+
+## ERCOT (Texas)
+- **ERS** (Emergency Response Service) - Emergency response program
+- **4CP** (Four Coincident Peak) - Peak reduction program (requires ERS)
+- **ECRS** (ERCOT Contingency Reserve Service) - Contingency reserves
+- **LRRRS** (Load Resource Reliability Service) - Reliability service
+
+## CAISO (California)
+- **Resource Adequacy (RA)** - Capacity program with fixed rates
+
+## APS (Arizona)
+- **Peak Solutions** - APS's demand response program
+
+## MDU/MISO (Midwest)
+- **DRR** (Demand Response Resources) - MDU's demand response program
+  - Fields: drrLoadCurtailment, drrPeakCapacityRate, drrOffPeakCapacityRate
+  - Module: public/regions/mdu/drr-module.js
+  - NOT to be confused with PJM's Emergency Capacity program
+
+## Key Distinctions
+
+### Emergency Capacity (EC) vs DRR
+1. **Emergency Capacity (EC)**:
+   - Region: PJM
+   - Separate summer/winter kW commitments
+   - Has notification time and excess rate parameters
+   - Uses "ec" prefix for all fields
+
+2. **Demand Response Resources (DRR)**:
+   - Region: MDU/MISO
+   - Single load curtailment value
+   - Has peak/off-peak capacity rates
+   - Uses "drr" prefix for all fields
+
+### Common Confusions to Avoid
+- Do NOT confuse PJM's Emergency Capacity with MDU's DRR
+- Do NOT confuse NYISO's ICAP-SCR with ISO-NE's ADCR
+- Do NOT confuse ERCOT's ECRS with PJM's EC
+- Clean Peak is MA-only, not available in other ISO-NE states
+- 4CP requires ERS participation in ERCOT
+
+### Field Naming Conventions
+Each program uses specific field naming patterns:
+- ISO-NE ADCR: adcrSummerLoadCurtailment, adcrWinterLoadCurtailment
+- PJM EC: ecSummerKW, ecWinterKW, ecNotificationTime
+- MDU DRR: drrLoadCurtailment, drrPeakCapacityRate
+- NYISO SCR: icapScrSummerKw, icapScrWinterKw
+
+Always use the correct field names when generating configurations or providing program information.

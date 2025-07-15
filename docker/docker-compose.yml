@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  dispatch-automation:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: cpower-dispatch-automation
+    
+    # Port mapping - Cloud Run uses 8080
+    ports:
+      - "8080:8080"     # Nginx proxy
+      - "3000:3000"     # Direct access to dispatch server (dev only)
+      - "3333:3333"     # Direct access to AI assistant (dev only)
+    
+    # Environment variables
+    environment:
+      # Node.js Configuration
+      - NODE_ENV=${NODE_ENV:-production}
+      - TZ=${TZ:-America/New_York}
+      
+      # Anthropic Claude API Configuration
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      
+      # Email Configuration (SMTP)
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      
+      # Email Monitoring (IMAP)
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      
+      # Portal Configuration
+      - PORTAL_URL=${PORTAL_URL}
+      - PORTAL_USERNAME=${PORTAL_USERNAME}
+      - PORTAL_PASSWORD=${PORTAL_PASSWORD}
+      
+      # Testing
+      - TEST_EMAIL=${TEST_EMAIL}
+    
+    # Volumes for persistence
+    volumes:
+      # Mount source code for hot-reloading in development
+      - ../src:/app/src:ro
+      - ../ai_assistant_cdea:/app/ai_assistant_cdea:ro
+      
+      # Mount data directories
+      - ../data:/app/data
+      - ../logs:/app/logs
+      - ../screenshots:/app/screenshots
+      
+      # Mount .env file
+      - ../.env:/app/.env:ro
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '1'
+          memory: 2G
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Development configuration with direct service access
+  dispatch-automation-dev:
+    extends: dispatch-automation
+    environment:
+      - NODE_ENV=development
+    volumes:
+      # Mount everything for development
+      - ..:/app
+      # Exclude node_modules and build directories
+      - /app/node_modules
+      - /app/dist
+      - /app/ai_assistant_cdea/venv
+    command: >
+      bash -c "
+        npm install &&
+        npm run build &&
+        supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+      "
+
+# Networks
+networks:
+  default:
+    name: cpower-network
+
+# Volumes for persistent data
+volumes:
+  dispatch-data:
+  dispatch-logs:
+  dispatch-screenshots:
