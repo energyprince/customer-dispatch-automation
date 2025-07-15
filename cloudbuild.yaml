@@ -4,7 +4,7 @@
 substitutions:
   _SERVICE_NAME: cpower-dispatch-automation
   _REGION: us-central1
-  _MAX_INSTANCES: '10'
+  _MAX_INSTANCES: '2'
   _MIN_INSTANCES: '1'
   _MEMORY: 4Gi
   _CPU: '2'
